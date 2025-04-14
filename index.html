@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Loan Analysis Checker</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 1rem;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Loan Analysis API</h2>
+
+  <label>Date:</label>
+  <input type="date" id="dateInput" />
+
+  <label>Account Number:</label>
+  <input type="text" id="accountInput" placeholder="e.g. A024643" />
+
+  <button onclick="sendRequest()">Submit</button>
+
+  <h3>Response:</h3>
+  <pre id="responseBox">Waiting for input...</pre>
+
+  <script>
+    async function sendRequest() {
+      const date = document.getElementById("dateInput").value;
+      const account = document.getElementById("accountInput").value;
+      const responseBox = document.getElementById("responseBox");
+
+      if (!date || !account) {
+        responseBox.textContent = "Please enter both date and account number.";
+        return;
+      }
+
+      const bodyData = {
+        date: date,
+        configurationID: "27196441-b449-4fc9-82c4-052c6e5dba5c",
+        productIds: [],
+        inArrears: {},
+        clientAge: {},
+        nextInstalment: {},
+        disbursement: {},
+        lastRepayment: {},
+        statusChange: {},
+        tagValueIds: [],
+        clientIds: [],
+        accountIds: [],
+        pendingInstalment: {},
+        maturity: {},
+        loanCycle: {},
+        fromAccount: account,
+        toAccount: account
+      };
+
+      const username = "930f4c0345af40cda18494eb14da45fc";
+      const password = "991a4830b34841548d9617bec0137114";
+      const auth = btoa(`${username}:${password}`);
+
+      try {
+        const res = await fetch("https://zurichtraining.instafin.info/submit/cube.LoanAnalysisFromConfiguration", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Basic ${auth}`
+          },
+          body: JSON.stringify(bodyData)
+        });
+
+        const text = await res.text();
+        responseBox.textContent = `Status: ${res.status}\n\nResponse:\n${text}`;
+      } catch (err) {
+        responseBox.textContent = `Error: ${err}`;
+      }
+    }
+  </script>
+
+</body>
+</html>
